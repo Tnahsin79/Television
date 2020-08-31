@@ -1,131 +1,238 @@
-//tv image: https://www.pinpng.com/pngs/m/44-449095_great-flat-screen-tv-apple-interactive-flat-screen.png
-//remote image: https://i5.walmartimages.com/asr/f9499f37-9a34-41b6-9137-13d71487f67e_1.a1b3773c918e96207e22555c9ed71d09.jpeg?odnWidth=612&odnHeight=612&odnBg=ffffff
+var div=document.createElement("div");
+div.setAttribute("class","maindiv");
 
-var title=document.createElement("h1");
-title.innerText="TELEVISION";
+var appname=document.createElement("h2");
+appname.setAttribute("class","display-2");
+appname.innerText="MOKKORI PLAYER";
+
+var topbtn=document.createElement("button");
+topbtn.setAttribute("class","btn btn-primary");
+topbtn.innerText="TOP ARTISTS";
+topbtn.setAttribute("onclick","topartist()");
+
+var recbtn=document.createElement("button");
+recbtn.setAttribute("class","btn btn-primary");
+recbtn.innerText="RECOMMENDED FOR YOU";
+recbtn.setAttribute("onclick","recommend()");
+
+var song=document.createElement("input");
+song.setAttribute("type","text");
+song.setAttribute("class","w3-input");
+song.setAttribute("id","name");
+song.setAttribute("placeholder","SEARCH SONG");
+song.addEventListener("keyup", function(event) {
+    // Number 13 is the "Enter" key on the keyboard
+    if (event.keyCode === 13) {
+      // Cancel the default action, if needed
+      event.preventDefault();
+      // Trigger the button element with a click
+      document.getElementById("search-btn").click();
+    }
+});
+
+var btn=document.createElement("button");
+btn.setAttribute("class","btn btn-primary");
+btn.setAttribute("id","search-btn");
+btn.innerText="SEARCH";
+btn.setAttribute("onclick","search()");
+
 var hr1=document.createElement("hr");
-var hr2=document.createElement("hr");
-var links=[
-    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
-]
-var i=0;
 
-var maindiv=document.createElement("div");
-maindiv.setAttribute("class","container");
+var bodydiv=document.createElement("div");
+bodydiv.setAttribute("class","container");
+bodydiv.setAttribute("id","bodydiv");
 
-var row=document.createElement("div");
-row.setAttribute("class","row");
-var tvcol=document.createElement("div");
-tvcol.setAttribute("class","col col-10");
-var remcol=document.createElement("div");
-remcol.setAttribute("class","col col-2")
+var load=document.createElement("h1");
+load.innerText="LOADING...";
+var load2=document.createElement("h3");
+load2.innerText="THIS MAY TAKE A FEW SECONDS!";
 
-var tvimg=document.createElement("img");
-tvimg.src="tv.png";
+var createcard=(result:object)=>{
+    let data=result["tracks"];
+    for(var i=0;i<data.length;i++)
+    {
+    if(data[i]["hub"]["actions"]===undefined)
+    continue;
+    
+    var makecard=document.createElement("div");
+    makecard.setAttribute("class","card");
 
-var remimg=document.createElement("img");
-remimg.setAttribute("id","remimg");
-remimg.src="remote.jpeg";
-//remimg.setAttribute("usemap","#image-map");
-remimg.useMap="#image-map";
+    var row=document.createElement("div");
+    row.setAttribute("class","row");
+    var left=document.createElement("div");
+    left.setAttribute("class","col-12 col-md-8");
+    var right=document.createElement("div");
+    right.setAttribute("class","col-12 col-md-4");
+    
+    var aud=document.createElement("audio");
+    aud.setAttribute("controls","true");
+    var source=document.createElement("source");
+    source.setAttribute("src",`${data[i]["hub"]["actions"][1]["uri"]}`);
+    aud.appendChild(source);
 
+    var cardbody=document.createElement("div");
+    cardbody.setAttribute("class","card-body");
+    var pname=document.createElement("p");
+    pname.innerText=data[i]["title"];
 
-var video=document.createElement("VIDEO");
-video.setAttribute("controls", "controls");
-video.setAttribute("autoplay","true");
-video.setAttribute("id","player");
-video.setAttribute("src","http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
+    var image=document.createElement("img");
+    image.setAttribute("src",`${data[i]["images"]["coverart"]}`);
 
-tvcol.appendChild(tvimg);
-remcol.appendChild(remimg);
-
-var map=document.createElement("map");
-map.setAttribute("name","image-map");
-
-var volplusmap=document.createElement("area");
-volplusmap.setAttribute("onclick","volplus()");
-volplusmap.setAttribute("coords","115,234,72,312,162,315");
-volplusmap.setAttribute("shape","poly");
-map.appendChild(volplusmap);
-
-var volminusmap=document.createElement("area");
-volminusmap.setAttribute("onclick","volminus()");
-volminusmap.setAttribute("coords","74,366,116,446,160,367");
-volminusmap.setAttribute("shape","poly");
-map.appendChild(volminusmap);
-
-var chplusmap=document.createElement("area");
-chplusmap.setAttribute("onclick","chplus()");
-chplusmap.setAttribute("coords","223,234 181,314 269,316");
-chplusmap.setAttribute("shape","poly");
-map.appendChild(chplusmap);
-
-var chminusmap=document.createElement("area");
-chminusmap.setAttribute("onclick","chminus()");
-chminusmap.setAttribute("coords","180,366 268,368 222,447");
-chminusmap.setAttribute("shape","poly");
-map.appendChild(chminusmap);
-
-
-var volplus=()=>{
-    console.log("hello1");
-    let vol;
-    let vid = <HTMLSelectElement>document.getElementById("player");
-    if(vid.volume<1.0)
-    vid.volume+=0.1;
+    makecard.appendChild(cardbody);
+    left.appendChild(pname);
+    left.appendChild(aud);
+    right.appendChild(image);
+    row.appendChild(left);
+    row.appendChild(right);
+    cardbody.appendChild(row);
+    bodydiv.appendChild(makecard);
+    }
 }
-var volminus=()=>{
-    console.log("hello2");
-    let vol;
-    let vid = <HTMLSelectElement>document.getElementById("player");
-    if(vid.volume>0.0)
-    vid.volume-=0.1;
+var topsongdb;
+var recsongdb;
+
+
+var home=async()=>{
+    try{
+        bodydiv.appendChild(load);
+        bodydiv.appendChild(load2);
+        let data=await fetch("https://shazam.p.rapidapi.com/songs/list-artist-top-tracks?locale=en-US&id=40008598", 
+        {
+	    "method": "GET",
+        "headers":  
+            {
+		    "x-rapidapi-host": "shazam.p.rapidapi.com",
+		    "x-rapidapi-key": "043071437cmshecef83baf67ac69p10da0bjsndf8db5e9f01d"
+	        }
+        });
+        data=await data.json();
+        //console.log(typeof(data),data);
+        topsongdb=data;
+        console.log("topdb done!")
+
+        //createcard(topsongdb);
+
+        data=await fetch("https://shazam.p.rapidapi.com/songs/list-recommendations?locale=en-US&key=484129036", 
+        {
+	    "method": "GET",
+        "headers":  
+            {
+		    "x-rapidapi-host": "shazam.p.rapidapi.com",
+		    "x-rapidapi-key": "043071437cmshecef83baf67ac69p10da0bjsndf8db5e9f01d"
+	        }
+        });
+        data=await data.json();
+        recsongdb=data;
+        console.log("recdb done!");
+
+        const myNode = document.getElementById("bodydiv");
+        myNode.innerHTML = '';
+        createcard(topsongdb);
+
+    }catch(error){
+        console.log(error);
+    }
+    
 }
-var chplus=()=>{
-    console.log("hello3");
-    if(i===links.length-1)
-    i=0;
+home();
+
+//var recommend=async()=>{
+var recommend=()=>{
+    const myNode = document.getElementById("bodydiv");
+    myNode.innerHTML = '';
+    createcard(recsongdb);
+    /*try{
+        const myNode = document.getElementById("bodydiv");
+        myNode.innerHTML = '';
+        let data=await fetch("https://shazam.p.rapidapi.com/songs/list-recommendations?locale=en-US&key=484129036", 
+        {
+	    "method": "GET",
+        "headers":  
+            {
+		    "x-rapidapi-host": "shazam.p.rapidapi.com",
+		    "x-rapidapi-key": "043071437cmshecef83baf67ac69p10da0bjsndf8db5e9f01d"
+	        }
+        });
+        data=await data.json();
+        console.log(typeof(data),data);
+        createcard(data);
+    }catch(error){
+        console.log(error);
+    }*/
+    
+}
+
+var topartist=()=>{
+    const myNode = document.getElementById("bodydiv");
+    myNode.innerHTML = '';
+    //home();
+    createcard(topsongdb);
+}
+
+var search=()=>{
+    let data=topsongdb["tracks"];
+    let flag=0;
+    var songname=(<HTMLSelectElement>document.getElementById("name")).value;
+    songname=songname.toUpperCase();
+    for(var i=0;i<data.length;i++)
+    {
+        let temp=data[i]["title"];
+        temp=temp.toUpperCase();
+        if(temp===songname)
+        { flag=1; break; }
+    }
+    const myNode = document.getElementById("bodydiv");
+    myNode.innerHTML = '';
+    
+    if(flag===0)
+    {
+        var res=document.createElement("h1");
+        res.innerText="SORRY! NO SONG(S) FOUND!!!!"
+        bodydiv.appendChild(res);   
+    }
     else
-    i++;
+    {
+    var makecard=document.createElement("div");
+    makecard.setAttribute("class","card");
 
-    let doc=document.getElementById("player");
-    doc?.setAttribute("src",links[i]);
+    var row=document.createElement("div");
+    row.setAttribute("class","row");
+    var left=document.createElement("div");
+    left.setAttribute("class","col-6 col-md-8");
+    var right=document.createElement("div");
+    right.setAttribute("class","col-6 col-md-4");
+    
+    var aud=document.createElement("audio");
+    aud.setAttribute("controls","true");
+    var source=document.createElement("source");
+    source.setAttribute("src",`${data[i]["hub"]["actions"][1]["uri"]}`);
+    aud.appendChild(source);
 
+    var cardbody=document.createElement("div");
+    cardbody.setAttribute("class","card-body");
+    var pname=document.createElement("p");
+    pname.innerText=data[i]["title"];
+
+    var image=document.createElement("img");
+    image.setAttribute("src",`${data[i]["images"]["coverart"]}`);
+
+    makecard.appendChild(cardbody);
+    left.appendChild(pname);
+    left.appendChild(aud);
+    right.appendChild(image);
+    row.appendChild(left);
+    row.appendChild(right);
+    cardbody.appendChild(row);
+    bodydiv.appendChild(makecard);
+    }
 }
-var chminus=()=>{
-    console.log("hello4");
-    if(i===0)
-    i=links.length-1;
-    else
-    i--;
-
-    let doc=document.getElementById("player");
-    doc?.setAttribute("src",links[i]);
-}
-
-//<img src="remote.jpeg" usemap="#image-map">
-/*row.innerHTML=`
-<map name="image-map">
-    <area onclick="volplus()" coords="115,234,72,312,162,315" shape="poly">
-    <area onclick="volminus()" coords="74,366,116,446,160,367" shape="poly">
-    <area onclick="chplus()" coords="225,235,176,318,273,317" shape="poly">
-    <area onclick="chminus()" coords="267,368,179,367,220,444" shape="poly">
-</map>`;*/
 
 
-
-
-row.appendChild(tvimg);
-row.appendChild(remimg);
-row.appendChild(map);
-row.appendChild(video);
-document.body.appendChild(title);
-document.body.appendChild(hr1);
-document.body.appendChild(hr2);
-document.body.appendChild(row);
-//maindiv.appendChild(row);
-//document.body.appendChild(maindiv);
+div.appendChild(appname);
+div.appendChild(topbtn);
+div.appendChild(recbtn);
+div.appendChild(song);
+div.appendChild(btn);
+div.appendChild(hr1);
+div.appendChild(bodydiv);
+document.body.appendChild(div);
